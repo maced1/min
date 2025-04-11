@@ -40,7 +40,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version-file: '.nvmrc'
-          cache: 'npm'
 
       - name: Install deps
         run: npm ci
@@ -53,7 +52,7 @@ jobs:
         continue-on-error: true # recommended setting for production. See notes below.
 
       - name: Run tests
-        run: npm run test
+        run: npm test
 
       - name: Tests measurement
         uses: green-coding-solutions/eco-ci-energy-estimation@v4 # use hash or @vX here (See note below)
