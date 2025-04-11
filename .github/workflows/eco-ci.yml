@@ -1,68 +1,71 @@
-name: Daily Tests with Energy Measurement
-run-name: Scheduled - DEV Branch
+name: Eco-CI Tests for Min Browser
+run-name: Eco-CI on Min - feature/eco-ci Branch
+
 on:
   push:
     branches:
       - feature/eco-ci
+  pull_request:
+    branches:
+      - feature/eco-ci
 
 permissions:
-  read-all
+  contents: read
 
 jobs:
   run-tests:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Start Measurement
-        uses: green-coding-solutions/eco-ci-energy-estimation@v4 # use hash or @vX here (See note below)
-        with:
-          task: start-measurement
-        # continue-on-error: true # recommended setting for production. See notes below.
+    - name: Start Measurement
+      uses: green-coding-solutions/eco-ci-energy-estimation@v4
+      with:
+        task: start-measurement
 
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        ref: 'feature/eco-ci'
 
-      - name: 'Checkout repository'
-        uses: actions/checkout@v4
-        with:
-          ref: 'feature/eco-ci'
+    - name: Use Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version-file: '.nvmrc'
 
-      - name: Checkout Repo Measurement
-        uses: green-coding-solutions/eco-ci-energy-estimation@v4 # use hash or @vX here (See note below)
-        with:
-          task: get-measurement
-          label: 'repo checkout'
-        # continue-on-error: true # recommended setting for production. See notes below.
+    # - name: Create package-lock.json if missing
+    #   run: |
+    #     if [ ! -f package-lock.json ]; then
+    #       npm install --package-lock-only
+    #     fi
 
-      # - name: Install pnpm
-      #   uses: pnpm/action-setup@v4
-      #   with:
-      #     run_install: false
+    - name: Get Measurement - Dependency Install
+      uses: green-coding-solutions/eco-ci-energy-estimation@v4
+      with:
+        task: get-measurement
+        label: 'dependency install'
+      continue-on-error: true
 
-      - name: Use Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version-file: '.nvmrc'
+    - name: Install dependencies
+      run: npm install
 
-      - name: Install deps
-        run: npm ci
+    - name: Run UI Tests
+      run: npm test
 
-      - name: Setup Python Measurment
-        uses: green-coding-solutions/eco-ci-energy-estimation@v4 # use hash or @vX here (See note below)
-        with:
-          task: get-measurement
-          label: 'python setup'
-        continue-on-error: true # recommended setting for production. See notes below.
+    - name: Get Measurement - Test Run
+      uses: green-coding-solutions/eco-ci-energy-estimation@v4
+      with:
+        task: get-measurement
+        label: 'npm test'
+      continue-on-error: true
 
-      - name: Run tests
-        run: npm test
+    - name: Display Energy Results
+      uses: green-coding-solutions/eco-ci-energy-estimation@v4
+      with:
+        task: display-results
+      continue-on-error: true
 
-      - name: Tests measurement
-        uses: green-coding-solutions/eco-ci-energy-estimation@v4 # use hash or @vX here (See note below)
-        with:
-          task: get-measurement
-          label: 'pytest'
-        continue-on-error: true # recommended setting for production. See notes below.
-
-      - name: Show Energy Results
-        uses: green-coding-solutions/eco-ci-energy-estimation@v4 # use hash or @vX here (See note below)
-        with:
-          task: display-results
-        continue-on-error: true # recommended setting for production. See notes below.
+    - name: Upload Eco-CI Report
+      uses: actions/upload-artifact@v3
+      with:
+        name: eco-ci-report
+        path: eco-ci-report.json
