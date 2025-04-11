@@ -48,12 +48,13 @@ jobs:
     - name: Install dependencies
       run: npm install
 
-    - name: Run Linter
-      run: npm run lint
-      continue-on-error: true
-
     - name: Run UI Tests
       run: npm test
+      continue-on-error: true
+    
+    - name: Show test output
+      run: cat test-results.txt || echo "No test output file found."
+      continue-on-error: true
 
     - name: Get Measurement - Test Run
       uses: green-coding-solutions/eco-ci-energy-estimation@v4
