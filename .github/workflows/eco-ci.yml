@@ -22,7 +22,7 @@ jobs:
       - name: 'Checkout repository'
         uses: actions/checkout@v4
         with:
-          ref: 'feature/set-eco-ci'
+          ref: 'feature/eco-ci'
 
       - name: Checkout Repo Measurement
         uses: green-coding-solutions/eco-ci-energy-estimation@v4 # use hash or @vX here (See note below)
@@ -37,7 +37,7 @@ jobs:
           run_install: false
 
       - name: Use Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v3
         with:
           node-version-file: '.nvmrc'
           cache: 'pnpm'
