@@ -3,7 +3,7 @@ run-name: Scheduled - DEV Branch
 on:
   push:
     branches:
-      - feature/set-eco-ci
+      - feature/eco-ci
 
 permissions:
   read-all
